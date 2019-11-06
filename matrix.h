@@ -14,6 +14,8 @@ private:
     unsigned int rows, columns;
 
 public:
+    int getRows(){ return rows;}
+    int getColumns(){ return columns;}
     Matrix(unsigned  rows, unsigned  columns){
         root = new Node<T>;
         root->posX=-1;
@@ -111,17 +113,70 @@ public:
 
     }
     Matrix<T> operator+(Matrix<T> other) const{
+        Node<T>* nodeThis = root->down;
+        Node<T>* nodeOther = other.root->down;
         Matrix<T>* answer = new Matrix<T>(rows,columns);
-        
+        for (int i = 0; i < rows ; ++i) {
+            Node<T>* nodeThisIter = nodeThis->next;
+            Node<T>* nodeOtherIter = nodeOther->next;
+            while (nodeOtherIter != nullptr or nodeThisIter !=nullptr){
+                if (nodeOtherIter->posY > nodeThisIter->posY){
+                    answer->set(nodeThisIter->posX,nodeThisIter->posY,nodeThisIter->data);
+                    nodeThisIter = nodeThisIter->next;
+                } else if (nodeOtherIter->posY<nodeThisIter->posY){
+                    answer->set(nodeOtherIter->posX,nodeOtherIter->posY,nodeOtherIter->data);
+                    nodeOtherIter = nodeOtherIter->next;
+                }else if (nodeOtherIter->posY == nodeThisIter->posY) {
+                    answer->set(nodeOtherIter->posX,nodeOtherIter->posY,nodeOtherIter->data+nodeThisIter->data);
+                    nodeOtherIter = nodeOtherIter->next;
+                    nodeThisIter = nodeThisIter->next;
+                }
+            }
+            nodeOther = nodeOther->down;
+            nodeThis = nodeThis->down;
+        }
+        return *answer;
     }
     Matrix<T> operator-(Matrix<T> other) const{
-
+        Node<T>* nodeThis = root->down;
+        Node<T>* nodeOther = other.root->down;
+        Matrix<T>* answer = new Matrix<T>(rows,columns);
+        for (int i = 0; i < rows ; ++i) {
+            Node<T>* nodeThisIter = nodeThis->next;
+            Node<T>* nodeOtherIter = nodeOther->next;
+            while (nodeOtherIter != nullptr or nodeThisIter !=nullptr){
+                if (nodeOtherIter->posY > nodeThisIter->posY){
+                    answer->set(nodeThisIter->posX,nodeThisIter->posY,nodeThisIter->data);
+                    nodeThisIter = nodeThisIter->next;
+                } else if (nodeOtherIter->posY<nodeThisIter->posY){
+                    answer->set(nodeOtherIter->posX,nodeOtherIter->posY,(-1)*nodeOtherIter->data);
+                    nodeOtherIter = nodeOtherIter->next;
+                }else if (nodeOtherIter->posY == nodeThisIter->posY) {
+                    answer->set(nodeOtherIter->posX,nodeOtherIter->posY,(-1)*nodeOtherIter->data+nodeThisIter->data);
+                    nodeOtherIter = nodeOtherIter->next;
+                    nodeThisIter = nodeThisIter->next;
+                }
+            }
+            nodeOther = nodeOther->down;
+            nodeThis = nodeThis->down;
+        }
+        return *answer;
     }
     Matrix<T> transpose() const{
-
+        Matrix<T>* answer = new Matrix<T>(rows,columns);
+        Node<T>* actual=root;
+        for (int i = 0; i < rows; ++i) {
+            actual= actual->down;
+            Node<T>* nodeActual = actual;
+            while (nodeActual->next!= nullptr){
+                nodeActual=nodeActual->next;
+                answer->set(nodeActual->posY,nodeActual->posX,nodeActual->data);
+            }
+        }
+        return *answer;
     }
     void print() const{
-
+        
     }
 
     ~Matrix(){
