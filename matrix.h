@@ -110,7 +110,20 @@ public:
         return *answer;
     }
     Matrix<T> operator*(Matrix<T> other) const{
-
+        //just iterate and look easy also ask for help
+        Matrix<T>* answer = new Matrix<T>(rows,columns);
+        Node<T>* actualThis=root;
+        Node<T>* actualOther=root;
+        for (int i = 0; i < rows; ++i) {
+            Node<T>* actualIterThis=root;
+            Node<T>* actualIterOther=root;
+            actualThis= actualThis->down;
+            Node<T>* nodeActual = actualThis;
+            while (nodeActual->next!= nullptr){
+                nodeActual=nodeActual->next;
+                answer->set(nodeActual->posY,nodeActual->posX,nodeActual->data);
+            }
+        }
     }
     Matrix<T> operator+(Matrix<T> other) const{
         Node<T>* nodeThis = root->down;
@@ -176,11 +189,25 @@ public:
         return *answer;
     }
     void print() const{
-        
+        Node<T>* actual=root;
+        for (int i = 0; i < rows; ++i) {
+            actual= actual->down;
+            Node<T>* nodeActual = actual;
+            while (nodeActual->next!= nullptr){
+                for (int j = 0; j < (nodeActual->posX - nodeActual->posX); ++j) {
+                    cout<<" ";
+                }
+                nodeActual=nodeActual->next;
+                cout<<(nodeActual->data)<<" ";
+            }cout<<endl;
+        }
     }
-
+    void operator=(Matrix<T> Equal){
+        this->root = Equal.root;
+        this->columns = Equal.columns;
+        this->rows = Equal.rows;
+    }
     ~Matrix(){
-        delete root;
         root= nullptr;
     }
 };
