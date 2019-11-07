@@ -16,9 +16,24 @@ public:
         next = nullptr;
         down = nullptr;
     }
+
+    void deleteRow(){
+        if (this->next!= nullptr){
+            this->next->deleteRow();
+            this->next= nullptr;
+        }
+        delete this;
+    }
+
+    void deleteColumn(){
+        if (this->down!= nullptr){
+            this->down->deleteColumn();
+            this->down = nullptr;
+        }
+        this->deleteRow();
+     }
+
     ~Node(){
-        next = nullptr;
-        down = nullptr;
     }
 
     friend class Matrix<T>;
