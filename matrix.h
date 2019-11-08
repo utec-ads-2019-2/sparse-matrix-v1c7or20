@@ -78,6 +78,9 @@ public:
             throw out_of_range("Row or column not in matrix");
 
     }
+
+
+
     T operator()(unsigned row, unsigned column){
         if(row<rows and column < columns){
             Node<T>* rowNode = root;
@@ -137,7 +140,7 @@ public:
         }else throw invalid_argument("Matrices can not be multiplied");
         return answer;
     }
-     Matrix<T> operator+(Matrix<T> other) {
+     const Matrix<T> operator+(Matrix<T> other) const {
         Matrix<T> answer(rows,columns) ;
         if (this->columns == other.columns and this->rows == other.rows){
             Node<T>* nodeThis = root->down;
@@ -161,11 +164,12 @@ public:
                 nodeOther = nodeOther->down;
                 nodeThis = nodeThis->down;
             }
+            nodeOther = nodeThis = nullptr;
+            return answer;
         }else
             throw invalid_argument("Matrix does not have equal rows or columns");
-        return answer;
     }
-     Matrix<T> operator-(Matrix<T> other) {
+     const Matrix<T> operator-(Matrix<T> other) const {
         if(this->rows == other.rows and this->columns == other.columns){
             Node<T>* nodeThis = root->down;
             Node<T>* nodeOther = other.root->down;
@@ -221,11 +225,10 @@ public:
         }
     }
     ~Matrix(){
-        root= nullptr;
+        deleteMatrix();
     }
     void deleteMatrix(){
         root->deleteColumn();
-        delete(this);
     }
 };
 
