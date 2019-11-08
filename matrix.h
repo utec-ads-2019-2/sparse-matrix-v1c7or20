@@ -60,8 +60,7 @@ public:
             }
             Node<T>* before=rowNode;
             Node<T>* after= before->next;
-            while (before->next != nullptr and after != nullptr  and after->posX<column ){
-                if(after->posX<column)
+            while (before->next != nullptr and after != nullptr  and after->posY<column ){
                 before = before->next;
                 after = before->next;
             }
@@ -69,7 +68,7 @@ public:
             toInsert->next = after;
             before=columnNode;
             after=before->down;
-            while (before->down!= nullptr and after!= nullptr and after->posY<row ){
+            while (before->down!= nullptr and after!= nullptr and after->posX<row ){
                 before = before->down;
                 after = before->down;
             }
@@ -109,27 +108,33 @@ public:
         }
         return answer;
     }
-    const Matrix<T>& operator*(Matrix<T> other) const{
+    const Matrix<T> operator*(Matrix<T> other) const{
         Matrix<T> answer (rows,other.columns);
         if(other.rows == this->columns){
-            Node<T>* actualThis=root;
-            Node<T>* actualOther=other.root;
+            Node<T>* actualThis=root->down;
             for (int i = 0; i < rows; ++i) {
-                Node<T>* actualIterThis=actualThis->next;
-                Node<T>* actualIterOther=actualOther->down;
-                while (actualIterOther != nullptr or actualIterThis !=nullptr){
-                    if (actualIterOther->posY > actualOther->posX){
-
-                    } else if (actualIterOther->posY < actualIterThis->posX){
-
-                    }else if (actualIterOther->posY == actualIterThis->posX) {
-
+                Node<T>* actualOther=other.root->next;
+                for (int j = 0; j <other.columns ; ++j) {
+                    Node<T>* actualIterThis=actualThis->next;
+                    Node<T>* actualIterOther=actualOther->down;
+                    T ansT = 0;
+                    while (actualIterOther != nullptr and actualIterThis !=nullptr){
+                        if (actualIterOther->posX > actualIterThis->posY){
+                            actualIterThis = actualIterThis->next;
+                        } else if (actualIterOther->posX < actualIterThis->posY){
+                            actualIterOther = actualIterOther->down;
+                        }else if (actualIterOther->posX == actualIterThis->posY) {
+                            ansT += actualIterOther->data*actualIterThis->data;
+                            actualIterOther = actualIterOther->down;
+                            actualIterThis = actualIterThis->next;
+                        }
                     }
+                    answer.set(i,j,ansT);
+                    actualOther = actualOther->next;
                 }
-                actualOther = actualOther->next;
                 actualThis = actualThis->down;
             }
-        }
+        }else throw invalid_argument("Matrices can not be multiplied");
         return answer;
     }
      Matrix<T> operator+(Matrix<T> other) {
@@ -216,8 +221,11 @@ public:
         }
     }
     ~Matrix(){
-        root->deleteColumn();
         root= nullptr;
+    }
+    void deleteMatrix(){
+        root->deleteColumn();
+        delete(this);
     }
 };
 
