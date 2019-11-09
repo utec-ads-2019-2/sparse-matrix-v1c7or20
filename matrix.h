@@ -225,7 +225,7 @@ public:
         }
     }
     ~Matrix(){
-        deleteMatrix();
+        root= nullptr;
     }
     void deleteMatrix(){
         root->deleteColumn();
