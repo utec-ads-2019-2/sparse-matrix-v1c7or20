@@ -25,6 +25,7 @@ int main() {
     matrix2.set(4,0,5);
     matrix2.set(4,1,1);
     matrix2.set(5,2,2);
+    matrix.deleteNode(4,1);
     Matrix<int> matrix3 = (matrix*matrix2);
     Tester::execute();
     return EXIT_SUCCESS;

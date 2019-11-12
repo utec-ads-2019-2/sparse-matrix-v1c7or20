@@ -111,7 +111,7 @@ public:
         }
         return answer;
     }
-    const Matrix<T> operator*(Matrix<T> other) const{
+    const Matrix<T> operator*(Matrix<T>& other) const{
         Matrix<T> answer (rows,other.columns);
         if(other.rows == this->columns){
             Node<T>* actualThis=root->down;
@@ -140,7 +140,7 @@ public:
         }else throw invalid_argument("Matrices can not be multiplied");
         return answer;
     }
-     const Matrix<T> operator+(Matrix<T> other) const {
+     const Matrix<T> operator+(Matrix<T>& other) const {
         Matrix<T> answer(rows,columns) ;
         if (this->columns == other.columns and this->rows == other.rows){
             Node<T>* nodeThis = root->down;
@@ -169,11 +169,11 @@ public:
         }else
             throw invalid_argument("Matrix does not have equal rows or columns");
     }
-     const Matrix<T> operator-(Matrix<T> other) const {
+     const Matrix<T> operator-(Matrix<T>& other) const {
+         Matrix<T> answer(rows,columns);
         if(this->rows == other.rows and this->columns == other.columns){
             Node<T>* nodeThis = root->down;
             Node<T>* nodeOther = other.root->down;
-            Matrix<T> answer(rows,columns);
             for (int i = 0; i < rows ; ++i) {
                 Node<T>* nodeThisIter = nodeThis->next;
                 Node<T>* nodeOtherIter = nodeOther->next;
@@ -193,10 +193,56 @@ public:
                 nodeOther = nodeOther->down;
                 nodeThis = nodeThis->down;
             }
+            nodeOther = nodeThis = nullptr;
             return answer;
         }else
             throw invalid_argument("Matrix does not have equal rows or columns");
     }
+
+    void deleteNode(unsigned X, unsigned Y){
+        Node<T>* before = root;
+        Node<T>* toDelete = root->down;
+        Node<T>* after = toDelete->next;
+        for (int i = 0; i < X; ++i) {
+            toDelete = toDelete->down;
+        }
+        before = toDelete;
+        toDelete = toDelete->next;
+        after = toDelete->next;
+        for (int j = 0; j < Y; ++j) {
+            if (toDelete->posX < X ){
+                before = before->next;
+                toDelete= before->next;
+                after =toDelete->next;
+            }else if (toDelete->posX == X and toDelete->posY == Y){
+                j =X;
+                break;
+            } else throw out_of_range("element does not exist");
+        }
+        Node<T>* beforeY = root;
+        Node<T>* toDeleteY = root->next;
+        Node<T>* afterY = toDelete->next;
+        for (int i = 0; i < Y; ++i) {
+            toDeleteY = toDeleteY->next;
+        }
+        beforeY = toDeleteY;
+        toDeleteY = toDeleteY->down;
+        afterY = toDeleteY->down;
+        for (int j = 0; j < X; ++j) {
+            if (toDelete->posY < Y){
+                beforeY = beforeY->down;
+                toDeleteY= beforeY->down;
+                afterY =afterY->down;
+            }else if (toDelete->posY == Y){
+                break;
+            } else throw out_of_range("element does not exist");
+        }
+        before->next = after;
+        beforeY->down = afterY;
+        delete(toDelete);
+        toDeleteY = 0;
+    }
+
     const Matrix<T>& transpose() const{
         Matrix<T> answer(columns,rows);
         Node<T>* actual=root;
@@ -224,8 +270,17 @@ public:
             }cout<<endl;
         }
     }
+    void operator=(Matrix<T> other){
+        root->deleteColumn();
+        root = nullptr;
+        this->root = other.root;
+        this->rows = other.rows;
+        this->columns = other.columns;
+        other.root = nullptr;
+    }
     ~Matrix(){
-        root= nullptr;
+        if(this->root != nullptr)
+            this->deleteMatrix();
     }
     void deleteMatrix(){
         root->deleteColumn();
